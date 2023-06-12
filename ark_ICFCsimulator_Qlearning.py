@@ -74,7 +74,7 @@ class Qlearning:
         self.action_space = action_space
         self.learning_rate = 0.001
         self.discount_factor = 0.9
-        self.epsilon = 0.4
+        self.epsilon = 0.1
         self.q_table= defaultdict(lambda: [0.0, 0.0, 0.0, 0.0])
 
     def learn(self, state, action, reward, next_state):    
