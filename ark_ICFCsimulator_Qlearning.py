@@ -107,7 +107,7 @@ if __name__ == "__main__":
     start_time = time()
     total_time = time()
 
-    for episode in range(20000):
+    for episode in range(30000):
         # initialize state
         value = 0
         timestpe = 0
