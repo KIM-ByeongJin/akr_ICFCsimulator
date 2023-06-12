@@ -6,6 +6,7 @@ import random
 from collections import defaultdict
 import csv
 from time import time
+import matplotlib.pyplot as plt
 
 class ICFC:
     def __init__(self):
@@ -55,6 +56,13 @@ class ICFC:
                 elif time < 14:
                     value_get = self.orundum_table[5][i]
                     reward = self.reward_table[5][i]
+                
+                '''
+                if i >= (self.n_actions/2):
+                    reward *= i - 1
+                else:
+                    reward *= -1 * (2 - i)
+                '''
 
                 break
             
@@ -66,17 +74,10 @@ class Qlearning:
         self.action_space = action_space
         self.learning_rate = 0.001
         self.discount_factor = 0.9
-        self.epsilon = 1.0 
-        self.epsilon_decay = 0.99
-        self.epsilon_min = 0.01 
+        self.epsilon = 0.4
         self.q_table= defaultdict(lambda: [0.0, 0.0, 0.0, 0.0])
 
-    def learn(self, state, action, reward, next_state):
-        if self.epsilon > self.epsilon_min:
-            self.epsilon = self.epsilon * self.epsilon_decay
-        else:
-            self.epsilon = self.epsilon_min
-    
+    def learn(self, state, action, reward, next_state):    
         current_q = self.q_table[state][action]
         new_q = reward + self.discount_factor * max(self.q_table[next_state])
         self.q_table[state][action] += self.learning_rate * (new_q - current_q)
@@ -104,13 +105,17 @@ class Qlearning:
 if __name__ == "__main__":
     env = ICFC()
     agent = Qlearning(env.action_space)
+    episode_rewards = []
+    Episode_return = []
     start_time = time()
     total_time = time()
+    num_MTE = 50
 
-    for episode in range(30000):
+    for episode in range(50000):
         # initialize state
         value = 0
         timestpe = 0
+        score = 0
         state = f'[{str(timestpe).zfill(2)}, {value}]'
         done = False
         
@@ -127,12 +132,16 @@ if __name__ == "__main__":
             value = next_value
             state = next_state
             timestpe = timestpe + 1
+            score += reward
 
-        if (episode + 1) % 10000 == 0:
+        episode_rewards.append(score)
+        if (episode + 1) % num_MTE == 0:
             end_time = time()
-            print(f'Time elapsed for {episode + 1} episodes: {end_time - start_time:.3f}')
+            mean_ep_reward = round(np.mean(episode_rewards[-num_MTE:]), 1)
+            print(f'{episode + 1} episodes time: {end_time - start_time:.3f}, mean reward: {mean_ep_reward}')
+            Episode_return.append(mean_ep_reward)
             start_time = time()
-
+            
     end_time = time()
     print(f'Totla time elapsed {end_time - total_time:.3f}')
 
@@ -143,3 +152,19 @@ if __name__ == "__main__":
     with open("output-Q learning.csv", 'w', newline='') as f:
         writer = csv.writer(f)
         writer.writerows(sorted_q_tabel)
+    
+    plt.figure(1)
+    plt.xlabel("Num Episode")
+    plt.ylabel(f'Mean of {num_MTE} Episode returns')
+    plt.plot(Episode_return, label='Episode_return')
+    plt.legend()
+    plt.savefig(f'Q learning-Mean of {num_MTE} Episode returns')
+
+    plt.figure(2)
+    plt.xlabel("Num Episode")
+    plt.ylabel("Episode returns")
+    plt.scatter(range(len(episode_rewards)), episode_rewards, s=0.5)
+    plt.savefig(f'Q learning-Episode returns')
+
+    plt.show()
+    plt.close()
