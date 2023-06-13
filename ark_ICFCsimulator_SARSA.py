@@ -12,7 +12,8 @@ class SARSA:
     def __init__(self, action_space):
         self.model_name = 'SARSA'
         self.action_space = action_space
-        self.learning_rate = 0.001
+        self.num_epoch = 1000
+        self.learning_rate = 0.01
         self.discount_factor = 0.9
         self.epsilon = 0.1
         self.q_table= defaultdict(lambda: [0.0, 0.0, 0.0, 0.0])
@@ -52,9 +53,8 @@ if __name__ == "__main__":
     start_time = time()
     total_time = time()
     num_MTE = 100
-    num_epoch = 1000
 
-    for episode in range(num_epoch):
+    for episode in range(agent.num_epoch):
         # initialize state
         value = 0
         timestep = 0
@@ -90,4 +90,4 @@ if __name__ == "__main__":
     print(agent.model_name, f': Totla time elapsed {end_time - total_time:.3f}')
 
     ark_evaluation.csv_save(agent.q_table, agent.model_name)
-    ark_evaluation.make_plot(num_MTE, Episode_return, num_epoch, episode_rewards, agent.model_name)
+    ark_evaluation.make_plot(num_MTE, Episode_return, agent.num_epoch, episode_rewards, agent.model_name)
