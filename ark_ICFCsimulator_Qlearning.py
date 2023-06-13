@@ -4,73 +4,13 @@
 import numpy as np
 import random
 from collections import defaultdict
-import csv
 from time import time
-import matplotlib.pyplot as plt
-
-class ICFC:
-    def __init__(self):
-        self.action_space = [0,1,2,3]
-        self.n_actions = len(self.action_space)
-        self.prob_table = np.array([[0.105, 0.395, 0.27, 0.23],
-                                    [0.105, 0.44, 0.18, 0.275],
-                                    [0.335, 0.005, 0.36, 0.3],
-                                    [0.395, 0.005, 0.18, 0.42]])
-        self.orundum_table = np.array([[300, 400, 500, 600],
-                                       [320, 340, 520, 620],
-                                       [280, 420, 480, 620],
-                                       [300, 400, 500, 600],
-                                       [280, 420, 520, 580],
-                                       [320, 380, 480, 620]])
-        self.reward_table = np.array([[462.5, 462.5, 462.5, 462.5], 
-                                      [450.9, 447.3, 482.1, 482.1],
-                                      [467.5, 471.1, 454.7, 459.5], 
-                                      [462.5, 462.5, 462.5, 462.5], 
-                                      [469.1, 467.3, 457.1, 449.9],
-                                      [455.9, 457.7, 467.9, 475.1]])
-
-    def reset(self):
-        return 0
-    
-    def step(self, action, time):
-        random_value = random.random()
-        prob_sum = 0
-        for i in range(self.n_actions):
-            prob_sum += self.prob_table[action][i]
-            if random_value <= prob_sum:
-                if time < 3:
-                    value_get = self.orundum_table[0][i]
-                    reward = self.reward_table[0][i]
-                elif time < 6:
-                    value_get = self.orundum_table[1][i]
-                    reward = self.reward_table[1][i]
-                elif time < 8:
-                    value_get = self.orundum_table[2][i]
-                    reward = self.reward_table[2][i]                    
-                elif time < 10:
-                    value_get = self.orundum_table[3][i]
-                    reward = self.reward_table[3][i]      
-                elif time < 12:
-                    value_get = self.orundum_table[4][i]
-                    reward = self.reward_table[4][i]      
-                elif time < 14:
-                    value_get = self.orundum_table[5][i]
-                    reward = self.reward_table[5][i]
-                
-                '''
-                if i >= (self.n_actions/2):
-                    reward *= i - 1
-                else:
-                    reward *= -1 * (2 - i)
-                '''
-
-                break
-            
-        done = False if time < 13 else True
-        return value_get, reward, done
+from ark_ICFCenvironment import ICFC
+import ark_evaluation
         
 class Qlearning:
     def __init__(self, action_space):
+        self.model_name = 'Q learning'
         self.action_space = action_space
         self.learning_rate = 0.001
         self.discount_factor = 0.9
@@ -109,9 +49,10 @@ if __name__ == "__main__":
     Episode_return = []
     start_time = time()
     total_time = time()
-    num_MTE = 50
+    num_MTE = 100
+    num_epoch = 1000
 
-    for episode in range(50000):
+    for episode in range(num_epoch):
         # initialize state
         value = 0
         timestpe = 0
@@ -145,26 +86,5 @@ if __name__ == "__main__":
     end_time = time()
     print(f'Totla time elapsed {end_time - total_time:.3f}')
 
-    for outk, outv in agent.q_table.items():
-        for ink in range(len(outv)):
-            agent.q_table[outk][ink] = np.round(outv[ink],3)
-    sorted_q_tabel = sorted(agent.q_table.items())
-    with open("output-Q learning.csv", 'w', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerows(sorted_q_tabel)
-    
-    plt.figure(1)
-    plt.xlabel("Num Episode")
-    plt.ylabel(f'Mean of {num_MTE} Episode returns')
-    plt.plot(Episode_return, label='Episode_return')
-    plt.legend()
-    plt.savefig(f'Q learning-Mean of {num_MTE} Episode returns')
-
-    plt.figure(2)
-    plt.xlabel("Num Episode")
-    plt.ylabel("Episode returns")
-    plt.scatter(range(len(episode_rewards)), episode_rewards, s=0.5)
-    plt.savefig(f'Q learning-Episode returns')
-
-    plt.show()
-    plt.close()
+    ark_evaluation.csv_save(agent.q_table, agent.model_name)
+    ark_evaluation.make_plot(num_MTE, Episode_return, num_epoch, episode_rewards, agent.model_name)
