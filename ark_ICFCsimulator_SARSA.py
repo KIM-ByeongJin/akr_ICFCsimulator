@@ -59,7 +59,7 @@ if __name__ == "__main__":
         value = 0
         timestep = 0
         score = 0
-        state = f'[{str(timestep).zfill(2)}, {value}]'
+        state = env.reset()
         done = False
         
         # select action for current state
@@ -87,7 +87,7 @@ if __name__ == "__main__":
             start_time = time()
 
     end_time = time()
-    print(f'Totla time elapsed {end_time - total_time:.3f}')
+    print(agent.model_name, f': Totla time elapsed {end_time - total_time:.3f}')
 
     ark_evaluation.csv_save(agent.q_table, agent.model_name)
     ark_evaluation.make_plot(num_MTE, Episode_return, num_epoch, episode_rewards, agent.model_name)

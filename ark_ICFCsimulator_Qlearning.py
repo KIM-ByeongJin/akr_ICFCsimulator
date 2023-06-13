@@ -55,24 +55,23 @@ if __name__ == "__main__":
     for episode in range(num_epoch):
         # initialize state
         value = 0
-        timestpe = 0
+        timestep = 0
         score = 0
-        state = f'[{str(timestpe).zfill(2)}, {value}]'
+        state = env.reset()
         done = False
         
         # select action for current state
         action = agent.get_action(state)
 
         while not done:
-            action = agent.get_action(state)
-            value_get, reward, done = env.step(action, timestpe)
+            value_get, reward, done = env.step(action, timestep)
             next_value = value + value_get
-            next_state = f'[{str(timestpe + 1).zfill(2)}, {next_value}]'
+            next_state = f'[{str(timestep + 1).zfill(2)}, {next_value}]'
             agent.learn(state, action, reward, next_state)
 
             value = next_value
             state = next_state
-            timestpe = timestpe + 1
+            timestep = timestep + 1
             score += reward
 
         episode_rewards.append(score)
@@ -84,7 +83,7 @@ if __name__ == "__main__":
             start_time = time()
             
     end_time = time()
-    print(f'Totla time elapsed {end_time - total_time:.3f}')
+    print(agent.model_name, f': Totla time elapsed {end_time - total_time:.3f}')
 
     ark_evaluation.csv_save(agent.q_table, agent.model_name)
     ark_evaluation.make_plot(num_MTE, Episode_return, num_epoch, episode_rewards, agent.model_name)

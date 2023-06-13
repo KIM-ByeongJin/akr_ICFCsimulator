@@ -23,8 +23,9 @@ class ICFC:
                                       [455.9, 457.7, 467.9, 475.1]])
 
     def reset(self):
-        return 0
-    
+        state = '[00, 0]'
+        return state
+        
     def step(self, action, timestep):
         random_value = random.random()
         prob_sum = 0
