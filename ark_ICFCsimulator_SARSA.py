@@ -1,12 +1,12 @@
-# Akrnights Industrial Cooperation Forum Contractee(ICFC) simulator
+# Akrnights Nulaiteburgh Industrial Cooperation Forum (ICF) simulator
 # RL method: SARSA
 
 import numpy as np
 import random
 from collections import defaultdict
 from time import time
-from ark_ICFCenvironment import ICFC
-import ark_evaluation
+from ark_ICF_environment import ICF
+import ark_ICF_csvsave_evaluation
         
 class SARSA:
     def __init__(self, action_space):
@@ -18,6 +18,12 @@ class SARSA:
         self.epsilon = 0.1
         self.q_table= defaultdict(lambda: [0.0, 0.0, 0.0, 0.0])
 
+    """
+    learn: Updating Q fucntion by using <S, A, R, S'> sample
+    Data types(Input):
+        state, next_state: char
+        action, next_action: int
+        reward: float                                       """
     def learn(self, state, action, reward, next_state, next_action):
         current_q = self.q_table[state][action]
         next_state_q = self.q_table[next_state][next_action]
@@ -25,6 +31,12 @@ class SARSA:
                 (reward + self.discount_factor * next_state_q - current_q))
         self.q_table[state][action] = new_q
     
+    """
+    get_action: Returning action by Q function with epsilon
+    Data types(Input):
+        state: char
+    Data types(Ouput):
+        action: int                                         """
     def get_action(self, state):
         if np.random.rand() < self.epsilon:
             action = np.random.choice(self.action_space)
@@ -33,6 +45,12 @@ class SARSA:
             action = self.arg_max(state_action)
         return action
     
+    """
+    arg_max: Returning action index maximizing Q function
+    Data types(Input):
+        state_action: list
+    Data types(Output):
+        random.choice(max_index_list): action(int)          """   
     def arg_max(self, state_action):
         max_index_list = []
         max_value = state_action[0]
@@ -46,7 +64,7 @@ class SARSA:
         return random.choice(max_index_list)
     
 if __name__ == "__main__":
-    env = ICFC()
+    env = ICF()
     agent = SARSA(env.action_space)
     episode_rewards = []
     Episode_return = []
@@ -62,13 +80,16 @@ if __name__ == "__main__":
         state = env.reset()
         done = False
         
-        # select action for current state
+        # select action from current state
         action = agent.get_action(state)
 
         while not done:
+            # Get next state, reward, done from the action
             value_get, reward, done = env.step(action, timestep)
             next_value = value + value_get
             next_state = f'[{str(timestep + 1).zfill(2)}, {next_value}]'
+            
+            # select action from next state
             next_action = agent.get_action(next_state)
             agent.learn(state, action, reward, next_state, next_action)
 
@@ -89,5 +110,5 @@ if __name__ == "__main__":
     end_time = time()
     print(agent.model_name, f': Totla time elapsed {end_time - total_time:.3f}')
 
-    ark_evaluation.csv_save(agent.q_table, agent.model_name)
-    ark_evaluation.make_plot(num_MTE, Episode_return, agent.num_epoch, episode_rewards, agent.model_name)
+    ark_ICF_csvsave_evaluation.csv_save(agent.q_table, agent.model_name)
+    ark_ICF_csvsave_evaluation.make_plot(num_MTE, Episode_return, agent.num_epoch, episode_rewards, agent.model_name)

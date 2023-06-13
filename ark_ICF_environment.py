@@ -1,7 +1,9 @@
+# Akrnights Nulaiteburgh Industrial Cooperation Forum (ICF) environment setup
+
 import numpy as np
 import random
 
-class ICFC:
+class ICF:
     def __init__(self):
         self.action_space = [0,1,2,3]
         self.n_actions = len(self.action_space)
@@ -22,10 +24,22 @@ class ICFC:
                                       [469.1, 467.3, 457.1, 449.9],
                                       [455.9, 457.7, 467.9, 475.1]])
 
+    """
+    reset: Initializing state
+    Data types(Output):
+        state: char             """
     def reset(self):
         state = '[00, 0]'
         return state
-        
+    
+    """        
+    step: Returning orundum value, reward, done by action, timestep
+    Data types(Input):
+        action, timestep: int
+    Data types(Output):
+        value_get: int
+        reward: float
+        done: bool                                                  """
     def step(self, action, timestep):
         random_value = random.random()
         prob_sum = 0
