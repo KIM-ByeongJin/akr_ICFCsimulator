@@ -15,7 +15,7 @@ def csv_save(q_table, model_name):
 
     # Sorting the Q table with a key and inserting column names
     sorted_q_tabel = sorted(q_table.items())
-    sorted_q_tabel.insert(0,('state',['action 0','action 1','action 2','action 3']))
+    sorted_q_tabel.insert(0,('state',['Complying Will','Stable Advance','Tough Stand','Miracle Idea']))
 
     # Saving the Q table as a csv file
     with open(f'csv\output-{model_name}.csv', 'w', newline='') as f:
