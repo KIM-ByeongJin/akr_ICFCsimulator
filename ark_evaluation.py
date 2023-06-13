@@ -7,9 +7,11 @@ def csv_save(q_table, model_name):
         for ink in range(len(outv)):
             q_table[outk][ink] = np.round(outv[ink],3)
     sorted_q_tabel = sorted(q_table.items())
+    sorted_q_tabel.insert(0,('state',['action 0','action 1','action 2','action 3']))
     with open(f'csv\output-{model_name}.csv', 'w', newline='') as f:
         writer = csv.writer(f)
-        writer.writerows(sorted_q_tabel)
+        for row in sorted_q_tabel:
+            writer.writerow([row[0]] + row[1])
 
 def make_plot(num_MTE, Episode_return, num_epoch, episode_rewards, model_name):
     plt.figure(1)
