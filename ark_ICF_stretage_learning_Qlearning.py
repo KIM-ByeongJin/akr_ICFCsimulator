@@ -12,8 +12,8 @@ class Qlearning:
     def __init__(self, action_space):
         self.model_name = 'Q learning'
         self.action_space = action_space
-        self.num_epoch = 1000
-        self.learning_rate = 0.01
+        self.num_epoch = 100000
+        self.learning_rate = 0.001
         self.discount_factor = 0.9
         self.epsilon = 0.1
         self.q_table= defaultdict(lambda: [0.0, 0.0, 0.0, 0.0])
@@ -68,7 +68,7 @@ if __name__ == "__main__":
     Episode_return = []
     start_time = time()
     total_time = time()
-    num_MTE = 100
+    num_MTE = 10000
 
     for episode in range(agent.num_epoch):
         # initialize state

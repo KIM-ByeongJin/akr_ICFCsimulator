@@ -17,6 +17,7 @@ class ICF:
                                        [300, 400, 500, 600],
                                        [280, 420, 520, 580],
                                        [320, 380, 480, 620]])
+        
         self.reward_table = np.array([[462.5, 462.5, 462.5, 462.5], 
                                       [450.9, 447.3, 482.1, 482.1],
                                       [467.5, 471.1, 454.7, 459.5], 
@@ -30,6 +31,10 @@ class ICF:
         state: char             """
     def reset(self):
         state = '[00, 0]'
+        return state
+    
+    def reset_simple(self):
+        state = 0
         return state
     
     """        
@@ -69,3 +74,27 @@ class ICF:
             
         done = False if timestep < 13 else True
         return value_get, reward, done
+    
+    def step_simple(self, action, timestep):
+        random_value = random.random()
+        prob_sum = 0
+        for i in range(self.n_actions):
+            prob_sum += self.prob_table[action][i]
+            if random_value <= prob_sum:
+                if timestep < 3:
+                    reward = self.orundum_table[0][i]
+                elif timestep < 6:
+                    reward = self.orundum_table[1][i]
+                elif timestep < 8:
+                    reward = self.orundum_table[2][i]                    
+                elif timestep < 10:
+                    reward = self.orundum_table[3][i]      
+                elif timestep < 12:
+                    reward = self.orundum_table[4][i]      
+                elif timestep < 14:
+                    reward = self.orundum_table[5][i]
+
+                break
+            
+        done = False if timestep < 13 else True
+        return reward, done
